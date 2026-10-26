@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Canal {{ libelle }}</title>
+</head>
+<body>
+    <h1>Canal : {{ libelle }}</h1>
+    <p>Prospects restants à répartir : {{ restants }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Suivant</button>
+        <button type="submit" name="retour" formnovalidate>Retour</button>
+    </form>
+</body>
+</html>

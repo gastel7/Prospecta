@@ -1,0 +1,352 @@
+:root {
+  --bleu: #1f4e79;
+  --bleu-clair: #e8f0f8;
+  --gris-clair: #f4f5f7;
+  --bordure: #d0d7de;
+  --rouge: #c62828;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--gris-clair);
+  color: #222;
+  line-height: 1.5;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+h1 {
+  color: var(--bleu);
+  font-size: 1.6rem;
+  margin: 16px 0;
+}
+
+h2 {
+  color: var(--bleu);
+  font-size: 1.2rem;
+  margin: 24px 0 8px;
+}
+
+p {
+  margin: 8px 0;
+}
+
+a {
+  color: var(--bleu);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--bordure);
+  margin: 24px 0;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+li {
+  margin: 6px 0;
+}
+
+strong {
+  color: var(--bleu);
+}
+
+/* Formulaires : chaque formulaire devient une carte blanche */
+form {
+  background: #fff;
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+form p {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+label {
+  font-weight: 500;
+}
+
+input:not([type="radio"]):not([type="checkbox"]) {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--bordure);
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+input:not([type="radio"]):not([type="checkbox"]):focus {
+  outline: 2px solid var(--bleu);
+  border-color: var(--bleu);
+}
+
+/* Boutons radio (joignable ?) affichés comme des pastilles */
+form ul {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+form ul li {
+  margin: 0;
+}
+
+form ul li label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+form ul li label:has(input:checked) {
+  background: var(--bleu-clair);
+  border-color: var(--bleu);
+}
+
+/* Messages d'erreur générés par Django */
+.errorlist {
+  list-style: none;
+  padding: 0;
+  color: var(--rouge);
+  display: block;
+  margin: 4px 0;
+}
+
+/* Boutons */
+button {
+  background: var(--bleu);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 8px 6px 0 0;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button[name="retour"] {
+  background: #fff;
+  color: var(--bleu);
+  border: 1px solid var(--bleu);
+}
+
+/* Le bouton Déconnexion n'est pas une carte */
+form[action*="deconnexion"] {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+}
+
+form[action*="deconnexion"] button {
+  background: #fff;
+  color: var(--bleu);
+  border: 1px solid var(--bordure);
+  margin: 0;
+}
+
+/* Petits écrans (téléphone) */
+@media (max-width: 480px) {
+  body {
+    padding: 16px 12px 32px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+  }
+}
+
+
+/* ===== Composants communs ===== */
+
+.carte {
+  background: #fff;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 16px 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.carte h2,
+.carte h3 {
+  margin-top: 0;
+}
+
+.carte form {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.entete-page {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nav a {
+  margin-right: 14px;
+}
+
+.petit {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.stat {
+  background: var(--bleu-clair);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+}
+
+.stat .valeur {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--bleu);
+}
+
+.stat .libelle {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  margin: 2px 4px 2px 0;
+  background: var(--gris-clair);
+  border: 1px solid var(--bordure);
+  color: #333;
+}
+
+.badge-vert {
+  background: #e6f4ea;
+  border-color: #a5d6b0;
+  color: #1e6b34;
+}
+
+.badge-orange {
+  background: #fff4e5;
+  border-color: #f5c27a;
+  color: #8a5300;
+}
+
+.badge-gris {
+  color: #555;
+}
+
+.alerte {
+  background: #fdecea;
+  color: var(--rouge);
+  border: 1px solid #f5b5ad;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 16px 0;
+}
+
+.succes {
+  background: #e6f4ea;
+  color: #1e6b34;
+  border: 1px solid #a5d6b0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 16px 0;
+}
+
+.liste-cartes {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.liste-cartes li {
+  background: #fff;
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Boutons-liens (Oui / Non / Ajouter à ...) */
+.bouton {
+  display: inline-block;
+  background: var(--bleu);
+  color: #fff;
+  border: 1px solid var(--bleu);
+  border-radius: 6px;
+  padding: 10px 18px;
+  text-decoration: none;
+  margin: 6px 8px 0 0;
+}
+
+.bouton-secondaire {
+  background: #fff;
+  color: var(--bleu);
+}
+
+.choix {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.liens-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.liens-action a {
+  display: inline-block;
+  padding: 10px 14px;
+  border: 1px solid var(--bleu);
+  border-radius: 6px;
+  text-decoration: none;
+  background: #fff;
+}
+
+.liens-action a:hover {
+  background: var(--bleu-clair);
+}

@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Mes saisies</title>
+</head>
+<body>
+    <div class="entete-page">
+        <h1>Mes saisies</h1>
+        <form method="post" action="{% url 'account:deconnexion' %}">
+            {% csrf_token %}
+            <button type="submit">Déconnexion</button>
+        </form>
+    </div>
+
+    <p class="nav">
+        <a href="{% url 'appels:saisie_total' %}">Saisie du jour</a>
+        <a href="{% url 'appels:tableau_general' %}">Tableau général</a>
+    </p>
+
+    {% for l in lignes %}
+    <div class="carte">
+        <div class="entete-page">
+            <h2>{{ l.saisie.date|date:"l j F Y" }}</h2>
+            <span class="badge badge-vert">{{ l.clients }} client(s)</span>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <span class="valeur">{{ l.saisie.nb_appeles }}</span>
+                <span class="libelle">appelés</span>
+            </div>
+            <div class="stat">
+                <span class="valeur">{{ l.saisie.nb_joignables }}</span>
+                <span class="libelle">joignables</span>
+            </div>
+            <div class="stat">
+                <span class="valeur">{{ l.saisie.nb_injoignables }}</span>
+                <span class="libelle">injoignables</span>
+            </div>
+        </div>
+
+        <ul class="liste-cartes">
+        {% for c in l.canaux %}
+            <li>
+                <strong>{{ c.libelle }}</strong>
+                <span>
+                    <span class="badge">{{ c.effectif }} prospect(s)</span>
+                    <span class="badge badge-vert">{{ c.accord }} d'accord</span>
+                    <span class="badge badge-orange">{{ c.attente }} en attente</span>
+                    <span class="badge badge-gris">{{ c.refus }} refus</span>
+                </span>
+            </li>
+        {% empty %}
+            <li>Aucun canal renseigné</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% empty %}
+    <div class="carte">Aucune saisie pour l'instant.</div>
+    {% endfor %}
+
+    <div class="carte">
+        <strong>Total clients, toutes saisies : {{ total_clients }}</strong>
+    </div>
+</body>
+</html>

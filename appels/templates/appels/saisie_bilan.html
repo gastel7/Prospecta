@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Bilan de la journée</title>
+</head>
+<body>
+    <h1>Bilan de la journée</h1>
+
+    {% if erreur %}<div class="alerte">{{ erreur }}</div>{% endif %}
+
+    <div class="stats">
+        <div class="stat">
+            <span class="valeur">{{ total_clients }}</span>
+            <span class="libelle">clients aujourd'hui</span>
+        </div>
+        <div class="stat">
+            <span class="valeur">{{ restants }}</span>
+            <span class="libelle">restant(s) sans canal</span>
+        </div>
+    </div>
+
+    <div class="carte">
+        <h2>Par canal</h2>
+        <ul class="liste-cartes">
+        {% for l in lignes %}
+            <li>
+                <strong>{{ l.libelle }}</strong>
+                <span>
+                    <span class="badge">{{ l.effectif }} prospect(s)</span>
+                    <span class="badge badge-vert">{{ l.accord }} d'accord</span>
+                    <span class="badge badge-orange">{{ l.attente }} en attente</span>
+                    <span class="badge badge-gris">{{ l.refus }} refus</span>
+                </span>
+            </li>
+        {% empty %}
+            <li>Aucun canal renseigné</li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    {% if restants > 0 %}
+    <div class="carte">
+        <h2>Ajouter les {{ restants }} prospect(s) manquant(s)</h2>
+        <div class="liens-action">
+        {% for code, libelle in canaux %}
+            <a href="{% url 'appels:saisie_canal' code %}?depuis=bilan">{{ libelle }}</a>
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="carte">
+        <form method="post">
+            {% csrf_token %}
+            {% if not erreur %}<button type="submit">Enregistrer la saisie</button>{% endif %}
+            <button type="submit" name="retour" formnovalidate>Retour</button>
+        </form>
+    </div>
+</body>
+</html>

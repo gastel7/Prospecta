@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Saisie du jour</title>
+</head>
+<body>
+    <p>Bonjour {{ user.first_name }}</p>
+    <form method="post" action="{% url 'account:deconnexion' %}">
+        {% csrf_token %}
+        <button type="submit">Déconnexion</button>
+    </form>
+
+    {% if modif %}
+        <h1>Modifier la saisie du {{ aujourdhui|date:"l j F Y" }}</h1>
+    {% else %}
+        <h1>Saisie du {{ aujourdhui|date:"l j F Y" }}</h1>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Suivant</button>
+    </form>
+
+    <p><a href="{% url 'appels:liste_saisies' %}">Voir toutes les saisies</a></p>
+</body>
+</html>

@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Tableau général</title>
+</head>
+<body>
+    <div class="entete-page">
+        <h1>Tableau général</h1>
+        <form method="post" action="{% url 'account:deconnexion' %}">
+            {% csrf_token %}
+            <button type="submit">Déconnexion</button>
+        </form>
+    </div>
+
+    <p class="nav">
+        <a href="{% url 'appels:saisie_total' %}">Saisie du jour</a>
+        <a href="{% url 'appels:liste_saisies' %}">Mes saisies</a>
+    </p>
+
+    <div class="stats">
+        <div class="stat">
+            <span class="valeur">{{ total_general }}</span>
+            <span class="libelle">clients au total</span>
+        </div>
+        <div class="stat">
+            <span class="valeur">{{ totaux|length }}</span>
+            <span class="libelle">assistant(s)</span>
+        </div>
+    </div>
+
+    <div class="carte">
+        <h2>Par assistant (toutes dates)</h2>
+        <ul class="liste-cartes">
+        {% for a in totaux %}
+            <li>
+                <span>
+                    <strong>{{ a.prenom }} {{ a.nom }}</strong><br>
+                    <span class="petit">{{ a.email }}</span>
+                </span>
+                <span class="badge badge-vert">{{ a.clients }} client(s)</span>
+            </li>
+        {% empty %}
+            <li>Aucune saisie pour l'instant.</li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <h2>Jour par jour</h2>
+    {% for jour in jours %}
+    <div class="carte">
+        <div class="entete-page">
+            <h3>{{ jour.date|date:"l j F Y" }}</h3>
+            <span class="badge badge-vert">{{ jour.total }} client(s)</span>
+        </div>
+        <ul class="liste-cartes">
+        {% for a in jour.assistants %}
+            <li>
+                <span>
+                    <strong>{{ a.prenom }} {{ a.nom }}</strong>
+                    <span class="petit">{{ a.email }}</span>
+                </span>
+                <span class="badge">{{ a.clients }} client(s)</span>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% empty %}
+    <div class="carte">Aucune saisie pour l'instant.</div>
+    {% endfor %}
+</body>
+</html>
