@@ -15,6 +15,13 @@
         </form>
     </div>
 
+    <!-- Remplacement du bouton d'import par le bouton d'export -->
+    <a href="{% url 'appels:exporter_csv' %}" class="btn btn-primary" style="background-color: #1a4a75; border: none; padding: 10px 20px; border-radius: 4px; color: white; text-decoration: none; display: inline-block;">
+        Exporter en CSV
+    </a>
+
+
+
     <p class="nav">
         <a href="{% url 'appels:saisie_total' %}">Saisie du jour</a>
         <a href="{% url 'appels:tableau_general' %}">Tableau général</a>

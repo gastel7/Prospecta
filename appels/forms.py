@@ -1,5 +1,8 @@
 from django import forms
 
+class CsvImportForm(forms.Form):
+    csv_file = forms.FileField(label="Sélectionnez un fichier CSV")
+
 
 class SaisieTotalForm(forms.Form):
     nb_appeles = forms.IntegerField(

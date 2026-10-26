@@ -39,3 +39,5 @@ class ResultatCanal(models.Model):
 
     def __str__(self):
         return f"{self.get_canal_display()} ({self.saisie.date:%d/%m/%Y})"
+
+

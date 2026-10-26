@@ -2,8 +2,10 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import render, redirect
 from django.utils import timezone
+import csv
+from django.contrib import messages
 
-from .forms import SaisieTotalForm, EffectifCanalForm, ResultatCanalForm
+from .forms import SaisieTotalForm, EffectifCanalForm, ResultatCanalForm, CsvImportForm
 from .models import SaisieJour, ResultatCanal
 
 CANAUX = [code for code, _ in ResultatCanal.CANAL_CHOIX]
@@ -272,3 +274,61 @@ def tableau_general(request):
         'totaux': sorted(totaux.values(), key=lambda a: a['clients'], reverse=True),
         'total_general': sum(a['clients'] for a in totaux.values()),
     })
+
+
+
+import csv
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from .models import SaisieJour  # Ajustez le chemin de l'import si nécessaire
+
+@login_required
+def exporter_csv(request):
+    # 1. Préparation de la réponse HTTP pour le téléchargement du fichier CSV
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    # On force l'encodage UTF-8 avec BOM pour qu'Excel sur Windows ouvre les accents correctement
+    response.write(b'\xef\xbb\xbf') 
+    response['Content-Disposition'] = 'attachment; filename="mes_saisies_appels.csv"'
+
+    # 2. Utilisation du point-virgule (;) idéal pour Excel en français
+    writer = csv.writer(response, delimiter=';')
+    
+    # En-tête du tableau CSV
+    writer.writerow([
+        'Date', 
+        'Total Appelés', 
+        'Total Joignables', 
+        'Total Injoignables',
+        'Canal', 
+        'Effectif (Prospects)', 
+        'En attente', 
+        'D\'accord (Clients)', 
+        'Refus'
+    ])
+
+    # 3. Récupération de l'historique de l'utilisateur connecté
+    saisies = (SaisieJour.objects
+               .filter(utilisateur=request.user)
+               .prefetch_related('resultats')
+               .order_by('-date'))
+
+    # 4. Écriture des données ligne par ligne
+    for s in saisies:
+        # On calcule les injoignables grâce à la méthode de votre modèle
+        injoignables = s.nb_injoignables() 
+        
+        # Pour chaque canal lié à cette journée
+        for r in s.resultats.all():
+            writer.writerow([
+                s.date.strftime('%d/%m/%Y'),
+                s.nb_appeles,
+                s.nb_joignables,
+                injoignables,
+                r.get_canal_display(),
+                r.effectif,
+                r.attente,
+                r.accord,
+                r.refus(), # Utilisation de votre méthode de calcul des refus
+            ])
+
+    return response

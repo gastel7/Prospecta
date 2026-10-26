@@ -12,4 +12,6 @@ urlpatterns = [
     path('saisie/modifier/', views.modifier_saisie, name='modifier_saisie'),
     path('saisies/', views.liste_saisies, name='liste_saisies'),
     path('tableau/', views.tableau_general, name='tableau_general'),
+    path('saisies/exporter/', views.exporter_csv, name='exporter_csv'),
+    # path('importer-csv/', views.importer_csv, name='importer_csv'),
 ]
