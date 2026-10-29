@@ -4,6 +4,10 @@ from django.shortcuts import render, redirect
 from django.utils import timezone
 import csv
 from django.contrib import messages
+from django.http import HttpResponse
+
+from .models import SaisieJour  # Ajustez le chemin de l'import si nécessaire
+from datetime import date as date_type
 
 from .forms import SaisieTotalForm, EffectifCanalForm, ResultatCanalForm, CsvImportForm
 from .models import SaisieJour, ResultatCanal
@@ -36,31 +40,43 @@ def _page_precedente(canal):
         return redirect('appels:saisie_total')
     return redirect('appels:saisie_canal', canal=CANAUX[i - 1])
 
-
 @login_required
 def saisie_total(request):
-    aujourdhui = timezone.localdate()
     etat = _etat(request)
     modif = etat.get('modif', False)
 
-    # Une seule saisie par jour et par assistant
-    if SaisieJour.objects.filter(utilisateur=request.user, date=aujourdhui).exists() and not modif:
-        return redirect('appels:fin_saisie')
+    if modif:
+        initial = {
+            'date': etat['date'],
+            'nb_appeles': etat['nb_appeles'],
+            'nb_joignables': etat['nb_joignables'],
+        }
+    else:
+        initial = {'date': timezone.localdate()}
 
     if request.method == 'POST':
-        form = SaisieTotalForm(request.POST)
-        if form.is_valid():
-            resultats = etat['resultats'] if modif else {}
-            request.session['saisie'] = {'modif': modif, 'resultats': resultats, **form.cleaned_data}
-            return redirect('appels:saisie_canal', canal=CANAUX[0])
+        form = SaisieTotalForm(request.POST, initial=initial)
     else:
-        form = SaisieTotalForm(initial=etat if modif else None)
+        form = SaisieTotalForm(initial=initial)
 
-    return render(request, 'appels/saisie_total.html', {
-        'form': form,
-        'aujourdhui': aujourdhui,
-        'modif': modif,
-    })
+    if modif:
+        form.fields['date'].disabled = True   # on ne change pas le jour d'une saisie existante
+
+    if request.method == 'POST' and form.is_valid():
+        jour = form.cleaned_data['date']
+        # Si cette journée existe déjà, on la modifie au lieu d'en créer une deuxième
+        if not modif and SaisieJour.objects.filter(utilisateur=request.user, date=jour).exists():
+            return redirect('appels:modifier_saisie', jour=jour.isoformat())
+        request.session['saisie'] = {
+            'modif': modif,
+            'date': jour.isoformat(),
+            'nb_appeles': form.cleaned_data['nb_appeles'],
+            'nb_joignables': form.cleaned_data['nb_joignables'],
+            'resultats': etat['resultats'] if modif else {},
+        }
+        return redirect('appels:saisie_canal', canal=CANAUX[0])
+
+    return render(request, 'appels/saisie_total.html', {'form': form, 'modif': modif})
 
 
 @login_required
@@ -158,7 +174,7 @@ def saisie_bilan(request):
             with transaction.atomic():
                 saisie, _ = SaisieJour.objects.update_or_create(
                     utilisateur=request.user,
-                    date=timezone.localdate(),
+                    date=date_type.fromisoformat(etat['date']),
                     defaults={
                         'nb_appeles': etat['nb_appeles'],
                         'nb_joignables': etat['nb_joignables'],
@@ -176,7 +192,7 @@ def saisie_bilan(request):
                             accord=r['accord'],
                         )
             request.session.pop('saisie', None)
-            return redirect('appels:fin_saisie')
+            return redirect('appels:fin_saisie', jour=etat['date'])
 
     return render(request, 'appels/saisie_bilan.html', {
         'lignes': lignes,
@@ -186,10 +202,12 @@ def saisie_bilan(request):
         'canaux': [(code, LIBELLES[code]) for code in CANAUX],
     })
 
-
 @login_required
-def fin_saisie(request):
-    saisie = SaisieJour.objects.filter(utilisateur=request.user, date=timezone.localdate()).first()
+def fin_saisie(request, jour):
+    saisie = SaisieJour.objects.filter(
+        utilisateur=request.user,
+        date=date_type.fromisoformat(jour),
+    ).first()
     if not saisie:
         return redirect('appels:saisie_total')
     return render(request, 'appels/fin_saisie.html', {
@@ -200,12 +218,16 @@ def fin_saisie(request):
 
 
 @login_required
-def modifier_saisie(request):
-    saisie = SaisieJour.objects.filter(utilisateur=request.user, date=timezone.localdate()).first()
+def modifier_saisie(request, jour):
+    saisie = SaisieJour.objects.filter(
+        utilisateur=request.user,
+        date=date_type.fromisoformat(jour),
+    ).first()
     if not saisie:
         return redirect('appels:saisie_total')
     request.session['saisie'] = {
         'modif': True,
+        'date': saisie.date.isoformat(),
         'nb_appeles': saisie.nb_appeles,
         'nb_joignables': saisie.nb_joignables,
         'resultats': {
@@ -276,11 +298,6 @@ def tableau_general(request):
     })
 
 
-
-import csv
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from .models import SaisieJour  # Ajustez le chemin de l'import si nécessaire
 
 @login_required
 def exporter_csv(request):

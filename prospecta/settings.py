@@ -70,7 +70,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'prospecta.wsgi.app'
+# WSGI_APPLICATION = 'prospecta.wsgi.app'
+WSGI_APPLICATION = 'prospecta.wsgi.application'
+
 
 
 # Database

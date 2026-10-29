@@ -7,7 +7,9 @@
     <title>Bilan de la journée</title>
 </head>
 <body>
-    <h1>Bilan de la journée</h1>
+    <h1>Bilan de la journée du {{ saisie.date|date:"l j F Y" }}</h1>
+
+
 
     {% if erreur %}<div class="alerte">{{ erreur }}</div>{% endif %}
 

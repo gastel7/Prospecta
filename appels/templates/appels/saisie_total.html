@@ -4,27 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <title>Saisie du jour</title>
+    <title>Saisie</title>
 </head>
 <body>
-    <p>Bonjour {{ user.first_name }}</p>
-    <form method="post" action="{% url 'account:deconnexion' %}">
-        {% csrf_token %}
-        <button type="submit">Déconnexion</button>
-    </form>
+    <div class="entete-page">
+        <h1>{% if modif %}Modifier une saisie{% else %}Nouvelle saisie{% endif %}</h1>
+        <form method="post" action="{% url 'account:deconnexion' %}">
+            {% csrf_token %}
+            <button type="submit">Déconnexion</button>
+        </form>
+    </div>
 
-    {% if modif %}
-        <h1>Modifier la saisie du {{ aujourdhui|date:"l j F Y" }}</h1>
-    {% else %}
-        <h1>Saisie du {{ aujourdhui|date:"l j F Y" }}</h1>
-    {% endif %}
+    <p class="nav">
+        <a href="{% url 'appels:liste_saisies' %}">Mes saisies</a>
+        <a href="{% url 'appels:tableau_general' %}">Tableau général</a>
+    </p>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Suivant</button>
-    </form>
-
-    <p><a href="{% url 'appels:liste_saisies' %}">Voir toutes les saisies</a></p>
+    <div class="carte">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Suivant</button>
+        </form>
+    </div>
 </body>
 </html>

@@ -1,18 +1,30 @@
 from django import forms
+from django.utils import timezone
+
 
 class CsvImportForm(forms.Form):
     csv_file = forms.FileField(label="Sélectionnez un fichier CSV")
 
 
 class SaisieTotalForm(forms.Form):
+    date = forms.DateField(
+        label="Date de la saisie",
+        widget=forms.DateInput(attrs={'type': 'date'}),
+    )
     nb_appeles = forms.IntegerField(
-        label="Combien de contacts avez-vous appelés aujourd'hui ?",
+        label="Combien de contacts avez-vous appelés ce jour-là ?",
         min_value=0,
     )
     nb_joignables = forms.IntegerField(
         label="Combien ont été joignables ?",
         min_value=0,
     )
+
+    def clean_date(self):
+        jour = self.cleaned_data['date']
+        if jour > timezone.localdate():
+            raise forms.ValidationError("La date ne peut pas être dans le futur.")
+        return jour
 
     def clean(self):
         data = super().clean()
@@ -22,6 +34,7 @@ class SaisieTotalForm(forms.Form):
             self.add_error('nb_joignables', "Il ne peut pas y avoir plus de joignables que d'appels.")
         return data
 
+    
 
 class EffectifCanalForm(forms.Form):
     effectif = forms.IntegerField(label="Combien ont choisi ce canal ?", min_value=0)

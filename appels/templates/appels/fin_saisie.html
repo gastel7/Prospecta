@@ -13,10 +13,10 @@
         {% if termine %}
             <div class="succes">Merci, la saisie est terminée.</div>
         {% else %}
-            <h1>Avez-vous terminé la saisie d'aujourd'hui ?</h1>
+            <h1>Avez-vous terminé la saisie de cette journée ?</h1>
             <div class="choix">
                 <a class="bouton" href="?ok=1">Oui</a>
-                <a class="bouton bouton-secondaire" href="{% url 'appels:modifier_saisie' %}">Non, modifier</a>
+                <a class="bouton bouton-secondaire" href="{% url 'appels:modifier_saisie' saisie.date|date:'Y-m-d' %}">Non, modifier</a>
             </div>
         {% endif %}
     </div>
@@ -33,6 +33,7 @@
     <p class="nav">
         <a href="{% url 'appels:liste_saisies' %}">Voir toutes les saisies</a>
         <a href="{% url 'appels:tableau_general' %}">Tableau général</a>
+        <a href="{% url 'appels:saisie_total' %}">Saisir une autre date</a>
     </p>
 
     <form method="post" action="{% url 'account:deconnexion' %}">
