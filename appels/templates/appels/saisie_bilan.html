@@ -7,7 +7,7 @@
     <title>Bilan de la journée</title>
 </head>
 <body>
-    <h1>Bilan de la journée du {{ saisie.date|date:"l j F Y" }}</h1>
+    <h1>Bilan de la journée du {{ jour|date:"l j F Y" }}</h1>
 
 
 
@@ -16,7 +16,7 @@
     <div class="stats">
         <div class="stat">
             <span class="valeur">{{ total_clients }}</span>
-            <span class="libelle">clients aujourd'hui</span>
+            <span class="libelle">client{{ total_clients|pluralize }} obtenu{{ total_clients|pluralize }}</span>
         </div>
         <div class="stat">
             <span class="valeur">{{ restants }}</span>

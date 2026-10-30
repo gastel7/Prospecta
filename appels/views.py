@@ -184,23 +184,22 @@ def saisie_bilan(request):
                 for code in CANAUX:
                     r = etat['resultats'].get(code)
                     if r and r['effectif'] > 0:
-                        ResultatCanal.objects.create(
-                            saisie=saisie,
-                            canal=code,
-                            effectif=r['effectif'],
-                            attente=r['attente'],
-                            accord=r['accord'],
-                        )
+                        ResultatCanal.objects.create( saisie=saisie, canal=code, effectif=r['effectif'], attente=r['attente'],accord=r['accord'],)
+            
             request.session.pop('saisie', None)
             return redirect('appels:fin_saisie', jour=etat['date'])
 
-    return render(request, 'appels/saisie_bilan.html', {
+    context = { 
         'lignes': lignes,
         'total_clients': total_clients,
         'erreur': erreur,
         'restants': restants,
         'canaux': [(code, LIBELLES[code]) for code in CANAUX],
-    })
+        'jour': date_type.fromisoformat(etat['date']),
+
+    }
+
+    return render(request, 'appels/saisie_bilan.html', context)
 
 @login_required
 def fin_saisie(request, jour):
